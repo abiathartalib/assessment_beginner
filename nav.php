@@ -15,6 +15,9 @@
         <li class="nav-item">
           <a class="nav-link" href="clients_add.php">Add Client</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="services_list.php">Services</a>
+        </li>
       </ul>
     </div>
   </div>

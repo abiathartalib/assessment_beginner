@@ -1,4 +1,4 @@
-gradient<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -33,7 +33,7 @@ gradient<!doctype html>
     </div>
 
     <div class="row justify-content-center">
-      <div class="col-md-5 mb-4">
+      <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100 border-0">
           <div class="card-body text-center p-5">
             <h3 class="card-title mb-3">View Clients</h3>
@@ -42,12 +42,21 @@ gradient<!doctype html>
           </div>
         </div>
       </div>
-      <div class="col-md-5 mb-4">
+      <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100 border-0">
           <div class="card-body text-center p-5">
             <h3 class="card-title mb-3">Add New Client</h3>
             <p class="card-text text-muted mb-4">Register a new client into the system with their contact information.</p>
             <a href="pages/clients_add.php" class="btn btn-success btn-lg px-4 rounded-pill">Add Client</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 border-0">
+          <div class="card-body text-center p-5">
+            <h3 class="card-title mb-3">Manage Services</h3>
+            <p class="card-text text-muted mb-4">View and edit services, pricing and descriptions.</p>
+            <a href="pages/services_list.php" class="btn btn-warning btn-lg px-4 rounded-pill">Services</a>
           </div>
         </div>
       </div>
