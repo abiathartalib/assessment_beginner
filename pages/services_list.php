@@ -8,68 +8,72 @@ $create = "CREATE TABLE IF NOT EXISTS services (
 )";
 mysqli_query($conn, $create);
 $result = mysqli_query($conn, "SELECT * FROM services ORDER BY service_id DESC");
+
+$path_to_root = "../";
+$page = "services";
+$page_title = "Services";
+include "../includes/header.php";
+include "../includes/sidebar.php";
 ?>
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Services</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-</head>
-<body class="bg-light">
-<?php include "../nav.php"; ?>
-<div class="container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="text-primary fw-bold"><i class="bi bi-briefcase-fill me-2"></i>Services</h2>
-    <div class="d-flex gap-2">
-      <a href="services_edit.php" class="btn btn-success rounded-pill shadow-sm">
-        <i class="bi bi-plus-lg me-1"></i> Add Service
-      </a>
-      <a href="../index.php" class="btn btn-outline-secondary rounded-pill shadow-sm">
-        <i class="bi bi-house-door me-1"></i> Home
-      </a>
-    </div>
+
+<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
+  <div>
+    <h2 class="fw-bold mb-1">Services</h2>
+    <p class="text-muted mb-0">Manage your service offerings</p>
   </div>
-  <div class="card shadow border-0 rounded-3">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover table-striped mb-0 align-middle">
-          <thead class="table-dark">
+  <a href="services_edit.php" class="btn btn-primary shadow-sm">
+    <i class="bi bi-plus-lg me-1"></i> Add Service
+  </a>
+</div>
+
+<div class="card shadow-sm border-0 fade-in" style="animation-delay: 0.1s;">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead>
+          <tr>
+            <th class="py-3 ps-4" style="width: 10%;">ID</th>
+            <th class="py-3" style="width: 25%;">Service Name</th>
+            <th class="py-3" style="width: 15%;">Price</th>
+            <th class="py-3" style="width: 35%;">Description</th>
+            <th class="py-3 pe-4 text-end" style="width: 15%;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php while($row = mysqli_fetch_assoc($result)) { ?>
             <tr>
-              <th class="py-3 ps-4">ID</th>
-              <th class="py-3">Name</th>
-              <th class="py-3">Price</th>
-              <th class="py-3">Description</th>
-              <th class="py-3 pe-4 text-end">Action</th>
+              <td class="ps-4 text-muted">#<?php echo $row['service_id']; ?></td>
+              <td class="fw-semibold text-dark">
+                <div class="d-flex align-items-center">
+                    <div class="rounded bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; font-size: 0.9rem;">
+                        <i class="bi bi-tag-fill"></i>
+                    </div>
+                    <?php echo $row['service_name']; ?>
+                </div>
+              </td>
+              <td class="fw-bold text-dark">$<?php echo number_format((float)$row['price'], 2); ?></td>
+              <td class="text-secondary text-truncate" style="max-width: 200px;"><?php echo $row['description']; ?></td>
+              <td class="pe-4 text-end">
+                <a href="services_edit.php?id=<?php echo $row['service_id']; ?>" class="btn btn-sm btn-light text-primary">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            <?php while($row = mysqli_fetch_assoc($result)) { ?>
-              <tr>
-                <td class="ps-4 text-muted">#<?php echo $row['service_id']; ?></td>
-                <td class="fw-semibold"><?php echo $row['service_name']; ?></td>
-                <td><?php echo number_format((float)$row['price'], 2); ?></td>
-                <td><?php echo $row['description']; ?></td>
-                <td class="pe-4 text-end">
-                  <a href="services_edit.php?id=<?php echo $row['service_id']; ?>" class="btn btn-sm btn-outline-primary">
-                    <i class="bi bi-pencil-square"></i> Edit
-                  </a>
-                </td>
-              </tr>
-            <?php } ?>
-            <?php if(mysqli_num_rows($result) == 0): ?>
-              <tr>
-                <td colspan="5" class="text-center py-5 text-muted">No services found.</td>
-              </tr>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
+          <?php } ?>
+          <?php if(mysqli_num_rows($result) == 0): ?>
+            <tr>
+              <td colspan="5" class="text-center py-5 text-muted">
+                <div class="d-flex flex-column align-items-center">
+                    <i class="bi bi-briefcase fs-1 mb-3 text-secondary opacity-50"></i>
+                    <p class="mb-0">No services found.</p>
+                </div>
+              </td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+<?php include "../includes/footer.php"; ?>
