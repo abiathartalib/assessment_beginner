@@ -1,5 +1,7 @@
 <?php
+include "../includes/auth.php";
 include "../db.php";
+
 $create = "CREATE TABLE IF NOT EXISTS services (
   service_id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   service_name VARCHAR(255) NOT NULL,
@@ -7,73 +9,87 @@ $create = "CREATE TABLE IF NOT EXISTS services (
   description VARCHAR(255)
 )";
 mysqli_query($conn, $create);
+
+$message = "";
+$messageType = "";
+
+if (isset($_GET['delete_id'])) {
+    $delete_id = (int) $_GET['delete_id'];
+    if ($delete_id > 0) {
+        if (mysqli_query($conn, "DELETE FROM services WHERE service_id = $delete_id")) {
+            $message = "Service deleted successfully.";
+            $messageType = "success";
+        } else {
+            $message = "Error deleting service: " . mysqli_error($conn);
+            $messageType = "danger";
+        }
+    }
+}
+
 $result = mysqli_query($conn, "SELECT * FROM services ORDER BY service_id DESC");
 
 $path_to_root = "../";
 $page = "services";
 $page_title = "Services";
+
 include "../includes/header.php";
 include "../includes/sidebar.php";
 ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4 fade-in">
-  <div>
-    <h2 class="fw-bold mb-1">Services</h2>
-    <p class="text-muted mb-0">Manage your service offerings</p>
-  </div>
-  <a href="services_edit.php" class="btn btn-primary shadow-sm">
-    <i class="bi bi-plus-lg me-1"></i> Add Service
-  </a>
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Services</h4>
+        <a href="services_add.php" class="btn btn-primary">Add Service</a>
+    </div>
 </div>
 
-<div class="card shadow-sm border-0 fade-in" style="animation-delay: 0.1s;">
-  <div class="card-body p-0">
-    <div class="table-responsive">
-      <table class="table table-hover mb-0 align-middle">
-        <thead>
-          <tr>
-            <th class="py-3 ps-4" style="width: 10%;">ID</th>
-            <th class="py-3" style="width: 25%;">Service Name</th>
-            <th class="py-3" style="width: 15%;">Price</th>
-            <th class="py-3" style="width: 35%;">Description</th>
-            <th class="py-3 pe-4 text-end" style="width: 15%;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php while($row = mysqli_fetch_assoc($result)) { ?>
-            <tr>
-              <td class="ps-4 text-muted">#<?php echo $row['service_id']; ?></td>
-              <td class="fw-semibold text-dark">
-                <div class="d-flex align-items-center">
-                    <div class="rounded bg-success bg-opacity-10 text-success d-flex align-items-center justify-content-center me-3" style="width: 36px; height: 36px; font-size: 0.9rem;">
-                        <i class="bi bi-tag-fill"></i>
-                    </div>
-                    <?php echo $row['service_name']; ?>
-                </div>
-              </td>
-              <td class="fw-bold text-dark">$<?php echo number_format((float)$row['price'], 2); ?></td>
-              <td class="text-secondary text-truncate" style="max-width: 200px;"><?php echo $row['description']; ?></td>
-              <td class="pe-4 text-end">
-                <a href="services_edit.php?id=<?php echo $row['service_id']; ?>" class="btn btn-sm btn-light text-primary">
-                  <i class="bi bi-pencil-square"></i> Edit
-                </a>
-              </td>
-            </tr>
-          <?php } ?>
-          <?php if(mysqli_num_rows($result) == 0): ?>
-            <tr>
-              <td colspan="5" class="text-center py-5 text-muted">
-                <div class="d-flex flex-column align-items-center">
-                    <i class="bi bi-briefcase fs-1 mb-3 text-secondary opacity-50"></i>
-                    <p class="mb-0">No services found.</p>
-                </div>
-              </td>
-            </tr>
-          <?php endif; ?>
-        </tbody>
-      </table>
+<?php if ($message != ""): ?>
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="alert alert-<?php echo $messageType; ?>"><?php echo $message; ?></div>
+        </div>
     </div>
-  </div>
+<?php endif; ?>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Description</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                                <tr>
+                                    <td><?php echo $row['service_id']; ?></td>
+                                    <td><?php echo htmlspecialchars($row['service_name']); ?></td>
+                                    <td><?php echo number_format($row['price'], 2); ?></td>
+                                    <td><?php echo htmlspecialchars($row['description']); ?></td>
+                                    <td class="text-end">
+                                        <a href="services_edit.php?id=<?php echo $row['service_id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>
+                                        <a href="services_list.php?delete_id=<?php echo $row['service_id']; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this service?');">Delete</a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                            <?php if (mysqli_num_rows($result) == 0): ?>
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No services found.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <?php include "../includes/footer.php"; ?>

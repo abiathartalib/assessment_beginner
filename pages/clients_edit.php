@@ -1,4 +1,5 @@
 <?php
+include "../includes/auth.php";
 include "../db.php";
 
 $id = $_GET['id'];
@@ -8,96 +9,78 @@ $client = mysqli_fetch_assoc($get);
 $message = "";
 $messageType = "";
 
-if (isset($_POST['update'])) {
-  $full_name = $_POST['full_name'];
-  $email = $_POST['email'];
-  $phone = $_POST['phone'];
-  $address = $_POST['address'];
-
-  if ($full_name == "" || $email == "") {
-    $message = "Name and Email are required!";
+if (!$client) {
+    $message = "Client not found.";
     $messageType = "danger";
-  } else {
-    $sql = "UPDATE clients
-            SET full_name='$full_name', email='$email', phone='$phone', address='$address'
-            WHERE client_id=$id";
-    if(mysqli_query($conn, $sql)) {
-        header("Location: clients_list.php");
-        exit;
-    } else {
-        $message = "Error: " . mysqli_error($conn);
-        $messageType = "danger";
+} else {
+    if (isset($_POST['update'])) {
+        $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
+        $email = mysqli_real_escape_string($conn, $_POST['email']);
+        $phone = mysqli_real_escape_string($conn, $_POST['phone']);
+        $address = mysqli_real_escape_string($conn, $_POST['address']);
+
+        if ($full_name == "") {
+            $message = "Full name is required.";
+            $messageType = "danger";
+        } else {
+            $sql = "UPDATE clients SET full_name='$full_name', email='$email', phone='$phone', address='$address' WHERE client_id = $id";
+            if (mysqli_query($conn, $sql)) {
+                $message = "Client updated successfully.";
+                $messageType = "success";
+                $get = mysqli_query($conn, "SELECT * FROM clients WHERE client_id = $id");
+                $client = mysqli_fetch_assoc($get);
+            } else {
+                $message = "Error updating client: " . mysqli_error($conn);
+                $messageType = "danger";
+            }
+        }
     }
-  }
 }
 
 $path_to_root = "../";
 $page = "clients";
 $page_title = "Edit Client";
+
 include "../includes/header.php";
 include "../includes/sidebar.php";
 ?>
 
-<div class="row justify-content-center fade-in">
-  <div class="col-md-8 col-lg-6">
-    <div class="card shadow-sm border-0 rounded-3 mt-4">
-      <div class="card-header bg-white border-bottom py-3">
-        <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Edit Client</h5>
-      </div>
-      <div class="card-body p-4">
-        
-        <?php if ($message != ""): ?>
-          <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
-            <i class="bi bi-exclamation-circle me-2"></i><?php echo $message; ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        <?php endif; ?>
-
-        <form method="post">
-          <div class="row g-3">
-            <div class="col-12">
-                <label class="form-label fw-bold text-muted small text-uppercase">Full Name <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
-                    <input type="text" name="full_name" class="form-control border-start-0 ps-0" value="<?php echo $client['full_name']; ?>" required>
-                </div>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Edit Client</h5>
+                <a href="clients_list.php" class="btn btn-sm btn-outline-secondary">Back to Clients</a>
             </div>
+            <div class="card-body">
+                <?php if ($message != ""): ?>
+                    <div class="alert alert-<?php echo $messageType; ?>"><?php echo $message; ?></div>
+                <?php endif; ?>
 
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted small text-uppercase">Email <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                    <input type="email" name="email" class="form-control border-start-0 ps-0" value="<?php echo $client['email']; ?>" required>
-                </div>
+                <?php if ($client): ?>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($client['full_name']); ?>" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($client['email']); ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" class="form-control" value="<?php echo htmlspecialchars($client['phone']); ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <textarea name="address" class="form-control" rows="3"><?php echo htmlspecialchars($client['address']); ?></textarea>
+                        </div>
+                        <button type="submit" name="update" class="btn btn-primary">Update Client</button>
+                    </form>
+                <?php endif; ?>
             </div>
-
-            <div class="col-md-6">
-                <label class="form-label fw-bold text-muted small text-uppercase">Phone</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone text-muted"></i></span>
-                    <input type="text" name="phone" class="form-control border-start-0 ps-0" value="<?php echo $client['phone']; ?>">
-                </div>
-            </div>
-
-            <div class="col-12">
-                <label class="form-label fw-bold text-muted small text-uppercase">Address</label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt text-muted"></i></span>
-                    <textarea name="address" class="form-control border-start-0 ps-0" rows="3"><?php echo $client['address']; ?></textarea>
-                </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-4">
-            <a href="clients_list.php" class="btn btn-light text-secondary">Cancel</a>
-            <button type="submit" name="update" class="btn btn-primary px-4 shadow-sm">
-                <i class="bi bi-check-lg me-1"></i> Update Client
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <?php include "../includes/footer.php"; ?>

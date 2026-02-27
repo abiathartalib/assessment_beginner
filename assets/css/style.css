@@ -292,6 +292,12 @@ a {
 .shadow-custom { box-shadow: var(--shadow-md); }
 
 /* Responsive */
+@media (max-width: 992px) {
+  :root {
+    --sidebar-width: 220px;
+  }
+}
+
 @media (max-width: 768px) {
   #sidebar-wrapper {
     margin-left: calc(-1 * var(--sidebar-width));
@@ -301,5 +307,22 @@ a {
   }
   .navbar {
     padding: 0 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-body {
+    padding: 1rem;
+  }
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+  .stats-card {
+    padding: 1rem;
+  }
+  .table thead th,
+  .table tbody td {
+    padding: 0.75rem 0.75rem;
+    font-size: 0.8rem;
   }
 }

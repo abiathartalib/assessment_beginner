@@ -1,4 +1,5 @@
 <?php
+include "includes/auth.php";
 include "db.php";
 
 // Stats
@@ -35,7 +36,19 @@ include "includes/header.php";
 include "includes/sidebar.php";
 ?>
 
-<div class="row g-4 mb-4 fade-in">
+<div class="row mb-4 fade-in">
+    <div class="col-12">
+        <div class="alert alert-primary shadow-sm border-0 d-flex align-items-center" role="alert">
+            <i class="bi bi-person-circle fs-4 me-3"></i>
+            <div>
+                <h5 class="alert-heading mb-0 fw-bold">Welcome, <?php echo strtoupper($_SESSION['username']); ?>!</h5>
+                <p class="mb-0 small opacity-75">You are logged in as administrator.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 fade-in" style="animation-delay: 0.1s;">
     <div class="col-md-6 col-lg-3">
         <div class="stats-card">
             <div>
@@ -85,7 +98,7 @@ include "includes/sidebar.php";
     </div>
 </div>
 
-<div class="row g-4 fade-in" style="animation-delay: 0.1s;">
+<div class="row g-4 fade-in" style="animation-delay: 0.2s;">
     <div class="col-lg-8">
         <div class="card h-100">
             <div class="card-header border-0 bg-transparent d-flex justify-content-between align-items-center">
